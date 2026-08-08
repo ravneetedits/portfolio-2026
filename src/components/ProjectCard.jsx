@@ -1,15 +1,17 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import useInView from '../hooks/useInView';
+import { ytThumbnail } from '../utils/youtube';
 
 export default function ProjectCard({ project, index, onOpen }) {
   const [ref, inView] = useInView({ threshold: 0.2 });
-  const [hovered, setHovered] = useState(false);
   const cardRef = useRef(null);
 
   const handleClick = () => {
     const rect = cardRef.current?.getBoundingClientRect();
     onOpen(project.id, rect);
   };
+
+  const thumb = project.final?.id ? ytThumbnail(project.final.id) : null;
 
   return (
     <div
@@ -24,30 +26,28 @@ export default function ProjectCard({ project, index, onOpen }) {
       <button
         ref={cardRef}
         data-cursor="card"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
         onClick={handleClick}
         className="group block w-full text-left"
       >
         <div
-          className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+          className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-ink transition-transform duration-500 ease-out group-hover:scale-[1.02]"
           style={{ backgroundImage: project.gradient }}
         >
-          {/* Simulated video preview (gradient shift on hover) */}
-          <div
-            className="absolute inset-0 transition-opacity duration-700"
-            style={{
-              opacity: hovered ? 1 : 0,
-              backgroundImage: project.gradient,
-              backgroundSize: '200% 200%',
-              animation: hovered ? 'cardShift 6s ease-in-out infinite' : 'none',
-            }}
-          />
-          <style>{`@keyframes cardShift {0%,100%{background-position:0% 0%}50%{background-position:100% 100%}}`}</style>
+          {thumb && (
+            <img
+              src={thumb}
+              alt={project.title}
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover opacity-90 transition-[transform,opacity] duration-[1200ms] ease-out group-hover:scale-[1.06] group-hover:opacity-100"
+              style={{ willChange: 'transform' }}
+            />
+          )}
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+          {/* Vignette border frame */}
+          <div className="pointer-events-none absolute inset-0" style={{ boxShadow: 'inset 0 0 60px 20px rgba(0,0,0,0.55)' }} />
           {project.spec && (
-            <span className="absolute left-4 top-4 rounded-full bg-black/50 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.2em] text-white/80 backdrop-blur">
+            <span className="absolute left-4 top-4 rounded-full bg-black/60 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.2em] text-white/80">
               Concept / Spec
             </span>
           )}

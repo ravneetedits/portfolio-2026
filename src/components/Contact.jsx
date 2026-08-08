@@ -2,74 +2,70 @@ import { useEffect, useRef, useState } from 'react';
 import MagneticButton from './MagneticButton';
 import useInView from '../hooks/useInView';
 
-const EMAIL = 'hello@ravneetedits.com';
+const EMAIL = 'ravneetedits@gmail.com';
 const HANDLE = '@ravneetedits';
 const SCRAMBLE_CHARS = '!<>-_\\/[]{}—=+*^?#________';
 
+// Direct DOM scramble — no React setState in the RAF loop, zero re-renders.
 function useScramble(target, active) {
-  const [text, setText] = useState(target);
+  const elRef = useRef(null);
   const frameRef = useRef(0);
   const queueRef = useRef([]);
+  const rafRef = useRef(null);
 
   useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
     if (!active) {
-      setText(target);
+      el.textContent = target;
       return;
     }
-    const fromText = target;
-    const toText = target;
-    const length = Math.max(fromText.length, toText.length);
-    const queue = [];
-    for (let i = 0; i < length; i++) {
-      const from = fromText[i] || '';
-      const to = toText[i] || '';
+    const length = target.length;
+    const queue = Array.from({ length }, (_, i) => {
       const start = Math.floor(Math.random() * 20);
       const end = start + Math.floor(Math.random() * 20) + 10;
-      queue.push({ from, to, start, end, char: '' });
-    }
+      return { to: target[i] || '', start, end, char: '' };
+    });
     queueRef.current = queue;
     frameRef.current = 0;
 
-    let raf;
     const update = () => {
       let output = '';
       let complete = 0;
-      for (let i = 0; i < queueRef.current.length; i++) {
-        const q = queueRef.current[i];
+      for (const q of queueRef.current) {
         if (frameRef.current >= q.end) {
           complete++;
           output += q.to;
         } else if (frameRef.current >= q.start) {
-          if (!q.char || Math.random() < 0.28) {
+          if (!q.char || Math.random() < 0.28)
             q.char = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
-          }
           output += q.char;
         } else {
-          output += q.from;
+          output += q.to;
         }
       }
-      setText(output);
+      el.textContent = output;
       if (complete < queueRef.current.length) {
         frameRef.current++;
-        raf = requestAnimationFrame(update);
+        rafRef.current = requestAnimationFrame(update);
       }
     };
-    raf = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(raf);
+    rafRef.current = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(rafRef.current);
   }, [target, active]);
 
-  return text;
+  return elRef;
 }
 
 export default function Contact() {
   const [ref, inView] = useInView({ threshold: 0.2 });
   const [hover, setHover] = useState(false);
-  const email = useScramble(EMAIL, hover);
+  const emailRef = useScramble(EMAIL, hover);
 
   return (
-    <section id="contact" ref={ref} className="relative bg-ink px-6 pb-20 pt-32 text-white md:px-14 md:pt-44">
+    <section id="contact" ref={ref} className="cv-auto relative bg-ink px-6 pb-20 pt-32 text-white md:px-14 md:pt-44">
       <div className="mx-auto max-w-6xl">
-        <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/50">03 — Contact</p>
+        <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/50">04 / Contact</p>
         <h2
           className="mt-6 font-display text-6xl font-semibold leading-[0.95] md:text-[11vw]"
           style={{
@@ -88,7 +84,7 @@ export default function Contact() {
             onMouseLeave={() => setHover(false)}
             className="font-mono text-sm uppercase tracking-[0.2em] text-white/60 hover:text-white"
           >
-            {email}
+            <span ref={emailRef}>{EMAIL}</span>
           </a>
           <MagneticButton as="a" href={`mailto:${EMAIL}`}>
             Start a project →
@@ -96,7 +92,7 @@ export default function Contact() {
         </div>
 
         <div className="mt-24">
-          <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Find me — {HANDLE}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Find me at {HANDLE}</p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             {[
               { label: 'Instagram', href: 'https://instagram.com/ravneetedits' },
@@ -109,7 +105,7 @@ export default function Contact() {
                 href={s.href}
                 target="_blank"
                 rel="noreferrer"
-                className="group relative rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-white/70 backdrop-blur-md transition-[color,background-color,border-color] duration-300 hover:border-white/25 hover:bg-white/[0.08] hover:text-white"
+                className="group relative rounded-full border border-white/10 bg-white/[0.06] px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-white/70 transition-[color,background-color,border-color] duration-300 hover:border-white/25 hover:bg-white/[0.12] hover:text-white"
                 style={{
                   opacity: inView ? 1 : 0,
                   transform: inView ? 'translateY(0)' : 'translateY(20px)',

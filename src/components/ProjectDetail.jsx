@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { projects } from '../data/projects';
 import { getLenis } from '../hooks/useLenis';
+import { ytEmbedUrl } from '../utils/youtube';
 
 const SLIDE_EASE = [0.76, 0, 0.24, 1];
 
@@ -108,31 +109,31 @@ function ProjectSlide({ project, onNext }) {
     >
       {/* Visual panel — compact on mobile, sticky half on desktop */}
       <motion.div
-        className="relative md:sticky md:top-0 md:h-screen"
+        className="relative bg-black md:sticky md:top-0 md:h-screen"
         initial={{ scale: 1.08 }}
         animate={{ scale: 1 }}
         exit={{ scale: 0.96 }}
         transition={{ duration: 0.95, ease: SLIDE_EASE }}
       >
-        <div
-          className="h-[45vh] w-full sm:h-[55vh] md:h-full"
-          style={{
-            backgroundImage: project.gradient,
-            backgroundSize: '200% 200%',
-            animation: 'detailShift 12s ease-in-out infinite',
-          }}
-        />
-        <style>{`@keyframes detailShift{0%,100%{background-position:0% 0%}50%{background-position:100% 100%}}`}</style>
-        <div className="pointer-events-none absolute inset-0 bg-black/20" />
-        <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.25em] text-white/70 sm:bottom-6 sm:left-6 sm:right-6">
-          <span>Playing preview</span>
+        {project.final?.id ? (
+          <div className="flex h-[50vw] min-h-[260px] w-full items-center justify-center bg-black sm:h-[55vh] md:h-full">
+            <YouTubePlayer video={project.final} />
+          </div>
+        ) : (
+          <div
+            className="h-[50vw] min-h-[260px] w-full sm:h-[55vh] md:h-full"
+            style={{ backgroundImage: project.gradient }}
+          />
+        )}
+        <div className="pointer-events-none absolute bottom-4 left-4 right-4 flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.25em] text-white/70 sm:bottom-6 sm:left-6 sm:right-6">
+          <span>Final piece</span>
           <span>{project.year}</span>
         </div>
       </motion.div>
 
       {/* Scrollable content */}
       <motion.div
-        className="flex flex-col gap-8 p-5 pt-6 sm:gap-10 sm:p-8 md:p-16"
+        className="flex flex-col gap-8 p-5 pt-7 sm:gap-10 sm:p-8 md:p-16"
         initial="enter"
         animate="center"
         variants={{
@@ -170,16 +171,30 @@ function ProjectSlide({ project, onNext }) {
           <p key="desc" className="font-sans text-sm leading-relaxed text-white/70 sm:text-base">
             {project.description}
           </p>,
-          <div key="process" className="flex flex-col gap-4 sm:gap-6">
-            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Process</p>
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="aspect-video w-full rounded-xl"
-                style={{ backgroundImage: project.gradient, opacity: 0.6 - i * 0.15 }}
-              />
-            ))}
-          </div>,
+          (project.bts?.length ?? 0) > 0 && (
+            <div key="bts" className="flex flex-col gap-4 sm:gap-6">
+              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Behind the scenes</p>
+              {project.bts.map((v) => (
+                <YouTubePlayer key={v.id} video={v} rounded />
+              ))}
+            </div>
+          ),
+          (project.stills?.length ?? 0) > 0 && (
+            <div key="stills" className="flex flex-col gap-4 sm:gap-6">
+              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Stills</p>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                {project.stills.map((src, i) => (
+                  <img
+                    key={src}
+                    src={src}
+                    alt={`${project.title} still ${i + 1}`}
+                    loading="lazy"
+                    className="aspect-video w-full rounded-xl object-cover"
+                  />
+                ))}
+              </div>
+            </div>
+          ),
           <button
             key="next"
             onClick={onNext}
@@ -187,7 +202,7 @@ function ProjectSlide({ project, onNext }) {
           >
             Next Project →
           </button>,
-        ].map((child, i) => (
+        ].filter(Boolean).map((child, i) => (
           <motion.div
             key={child.key ?? i}
             variants={{
@@ -200,5 +215,42 @@ function ProjectSlide({ project, onNext }) {
         ))}
       </motion.div>
     </motion.div>
+  );
+}
+
+// Responsive YouTube embed. Handles both 16:9 and 9:16 (shorts).
+// When embedded in a flex parent (the left sticky panel), shorts render
+// as a centered vertical frame capped by parent height.
+function YouTubePlayer({ video, rounded = false }) {
+  const isShort = !!video.shorts;
+  const src = ytEmbedUrl(video.id);
+  const radius = rounded ? 'rounded-xl' : '';
+
+  if (isShort) {
+    return (
+      <div className={`relative mx-auto w-full max-w-[360px] overflow-hidden bg-black ${radius}`} style={{ aspectRatio: '9 / 16' }}>
+        <iframe
+          src={src}
+          title="YouTube video player"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          className="absolute inset-0 h-full w-full"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`relative aspect-video w-full overflow-hidden bg-black ${radius}`}>
+      <iframe
+        src={src}
+        title="YouTube video player"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+        className="absolute inset-0 h-full w-full"
+      />
+    </div>
   );
 }

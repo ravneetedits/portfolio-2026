@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import useIsTouch from '../hooks/useIsTouch';
+import usePrefersLite from '../hooks/usePrefersLite';
 
 // Keyframe-diamond custom cursor with lerp smoothing.
 export default function Cursor() {
   const isTouch = useIsTouch();
+  const lite = usePrefersLite();
   const dotRef = useRef(null);
   const ringRef = useRef(null);
   const target = useRef({ x: -100, y: -100 });
@@ -11,7 +13,7 @@ export default function Cursor() {
   const state = useRef('default');
 
   useEffect(() => {
-    if (isTouch) return;
+    if (isTouch || lite) return;
     document.documentElement.classList.add('has-custom-cursor');
 
     const onMove = (e) => {
@@ -49,7 +51,7 @@ export default function Cursor() {
 
     let rafId;
     const tick = () => {
-      const lerp = 0.18;
+      const lerp = 0.28;
       current.current.x += (target.current.x - current.current.x) * lerp;
       current.current.y += (target.current.y - current.current.y) * lerp;
       const dot = dotRef.current;
@@ -72,7 +74,7 @@ export default function Cursor() {
     };
   }, [isTouch]);
 
-  if (isTouch) return null;
+  if (isTouch || lite) return null;
 
   return (
     <>

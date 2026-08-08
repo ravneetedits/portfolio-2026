@@ -5,13 +5,17 @@ import LoadingAnimation from './components/LoadingAnimation';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ProjectGrid from './components/ProjectGrid';
+import BlenderSection from './components/BlenderSection';
 import ProjectDetail from './components/ProjectDetail';
 import About from './components/About';
 import Contact from './components/Contact';
 import ScrollProgress from './components/ScrollProgress';
+import MaintenancePage from './components/MaintenancePage';
 import { projects } from './data/projects';
 
-export default function App() {
+const MAINTENANCE_MODE = false;
+
+function PortfolioSite() {
   useLenis();
   const [introDone, setIntroDone] = useState(false);
   const [activeId, setActiveId] = useState(null);
@@ -48,6 +52,7 @@ export default function App() {
       >
         <Hero />
         <ProjectGrid onOpen={openProject} />
+        <BlenderSection />
         <About />
         <Contact />
       </main>
@@ -59,4 +64,12 @@ export default function App() {
       />
     </div>
   );
+}
+
+export default function App() {
+  if (MAINTENANCE_MODE) {
+    return <MaintenancePage />;
+  }
+
+  return <PortfolioSite />;
 }

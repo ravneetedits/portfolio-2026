@@ -1,14 +1,17 @@
 import { useEffect } from 'react';
 import Lenis from 'lenis';
+import usePrefersLite from './usePrefersLite';
 
 let lenisInstance = null;
 export const getLenis = () => lenisInstance;
 
 export default function useLenis() {
+  const lite = usePrefersLite();
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) return;
+    // Skip smooth scroll on reduced-motion OR low-end devices — native scroll
+    // has zero JS overhead and is always smooth on the compositor thread.
+    if (lite) return;
 
     const lenis = new Lenis({
       duration: 1.15,
@@ -31,5 +34,5 @@ export default function useLenis() {
       lenis.destroy();
       lenisInstance = null;
     };
-  }, []);
+  }, [lite]);
 }

@@ -17,14 +17,14 @@ export default function ProjectGrid({ onOpen }) {
         }}
       >
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/50">01 — Selected Work</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/50">01 / Selected Work</p>
           <h2 className="mt-4 font-display text-5xl font-semibold leading-[0.95] text-white md:text-7xl">
             Recent frames<br />
             in motion.
           </h2>
         </div>
-        <p className="max-w-sm font-sans text-sm leading-relaxed text-white/60">
-          A curated slice from the last two years — SaaS explainers, brand loops, spec edits. Click any card for the full story, process notes, and credits.
+        <p className="max-w-sm font-sans text-sm leading-relaxed text-white/60 md:text-right">
+          SaaS explainers, brand loops, spec edits. Click any card to see the full breakdown.
         </p>
       </div>
 

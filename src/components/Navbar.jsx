@@ -50,8 +50,8 @@ export default function Navbar() {
 
   const pillStyle = {
     background: isDark ? 'rgba(10,10,10,0.12)' : 'rgba(255,255,255,0.06)',
-    backdropFilter: 'blur(20px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
     border: isDark ? '1px solid rgba(10,10,10,0.15)' : '1px solid rgba(255,255,255,0.12)',
     boxShadow: isDark
       ? 'inset 0 1px 0 rgba(0,0,0,0.08), 0 10px 40px rgba(0,0,0,0.12)'
