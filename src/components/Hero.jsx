@@ -11,14 +11,16 @@ export default function Hero() {
   const reelRef     = useRef(null);
 
   useEffect(() => {
-    const words = titleRef.current?.querySelectorAll('.word') ?? [];
-    const tl = gsap.timeline({ delay: 0.2 });
-    tl.from(words,             { yPercent: 110, opacity: 0, duration: 1,   stagger: 0.08, ease: 'power4.out' })
-      .from(roleRef.current,   { opacity: 0, y: 18, duration: 0.7, ease: 'power3.out' }, '-=0.4')
-      .from(taglineRef.current,{ opacity: 0, y: 14, duration: 0.7, ease: 'power3.out' }, '-=0.5')
-      .from(ctaRef.current,    { opacity: 0, y: 18, duration: 0.7, ease: 'power3.out' }, '-=0.5')
-      .from(reelRef.current,   { opacity: 0, y: 20, duration: 0.8, ease: 'power3.out' }, '-=0.4');
-    return () => tl.kill();
+    const ctx = gsap.context(() => {
+      const words = titleRef.current?.querySelectorAll('.word') ?? [];
+      const tl = gsap.timeline({ delay: 0.2 });
+      tl.from(words,             { yPercent: 110, opacity: 0, duration: 1,   stagger: 0.08, ease: 'power4.out' })
+        .from(roleRef.current,   { opacity: 0, y: 18, duration: 0.7, ease: 'power3.out' }, '-=0.4')
+        .from(taglineRef.current,{ opacity: 0, y: 14, duration: 0.7, ease: 'power3.out' }, '-=0.5')
+        .from(ctaRef.current,    { opacity: 0, y: 18, duration: 0.7, ease: 'power3.out' }, '-=0.5')
+        .from(reelRef.current,   { opacity: 0, y: 20, duration: 0.8, ease: 'power3.out' }, '-=0.4');
+    });
+    return () => ctx.revert();
   }, []);
 
   return (

@@ -17,55 +17,56 @@ export default function LoadingAnimation({ onDone }) {
       onDone?.();
       return;
     }
-    sessionStorage.setItem('rs-intro-played', '1');
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setVisible(false);
-        onDone?.();
-      },
-    });
-
-    pathRefs.current.forEach((p) => {
-      if (!p) return;
-      const len = p.getTotalLength();
-      p.style.strokeDasharray = len;
-      p.style.strokeDashoffset = len;
-    });
-
-    tl.to(pathRefs.current, {
-      strokeDashoffset: 0,
-      duration: 1.1,
-      ease: 'power2.inOut',
-      stagger: 0.12,
-    })
-      .to(
-        pathRefs.current,
-        {
-          x: (i) => (i === 0 ? -40 : 60),
-          y: (i) => (i === 0 ? -20 : 30),
-          opacity: 0,
-          rotate: (i) => (i === 0 ? -8 : 12),
-          duration: 0.7,
-          ease: 'power3.in',
-          stagger: 0.05,
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        onStart: () => sessionStorage.setItem('rs-intro-played', '1'),
+        onComplete: () => {
+          setVisible(false);
+          onDone?.();
         },
-        '+=0.15'
-      )
-      .to(
-        rootRef.current,
-        { autoAlpha: 0, duration: 0.45, ease: 'power2.out' },
-        '-=0.2'
+      });
+
+      pathRefs.current.forEach((p) => {
+        if (!p) return;
+        const len = p.getTotalLength();
+        p.style.strokeDasharray = len;
+        p.style.strokeDashoffset = len;
+      });
+
+      tl.to(pathRefs.current, {
+        strokeDashoffset: 0,
+        duration: 1.1,
+        ease: 'power2.inOut',
+        stagger: 0.12,
+      })
+        .to(
+          pathRefs.current,
+          {
+            x: (i) => (i === 0 ? -40 : 60),
+            y: (i) => (i === 0 ? -20 : 30),
+            opacity: 0,
+            rotate: (i) => (i === 0 ? -8 : 12),
+            duration: 0.7,
+            ease: 'power3.in',
+            stagger: 0.05,
+          },
+          '+=0.15'
+        )
+        .to(
+          rootRef.current,
+          { autoAlpha: 0, duration: 0.45, ease: 'power2.out' },
+          '-=0.2'
+        );
+
+      // Skip button fades in after 1s
+      gsap.fromTo(
+        skipRef.current,
+        { autoAlpha: 0 },
+        { autoAlpha: 1, delay: 1, duration: 0.4 }
       );
+    }, rootRef);
 
-    // Skip button fades in after 1s
-    gsap.fromTo(
-      skipRef.current,
-      { autoAlpha: 0 },
-      { autoAlpha: 1, delay: 1, duration: 0.4 }
-    );
-
-    return () => tl.kill();
+    return () => ctx.revert();
   }, [onDone]);
 
   if (!visible) return null;
