@@ -13,7 +13,7 @@ import ScrollProgress from './components/ScrollProgress';
 import MaintenancePage from './components/MaintenancePage';
 import { projects } from './data/projects';
 
-const MAINTENANCE_MODE = false;
+const MAINTENANCE_MODE = true;
 
 function PortfolioSite() {
   useLenis();
