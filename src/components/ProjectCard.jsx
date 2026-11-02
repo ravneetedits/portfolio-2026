@@ -11,7 +11,7 @@ export default function ProjectCard({ project, index, onOpen }) {
     onOpen(project.id, rect);
   };
 
-  const thumb = project.final?.id ? ytThumbnail(project.final.id) : null;
+  const thumb = project.thumbnail ?? (project.final?.id ? ytThumbnail(project.final.id) : null);
 
   return (
     <div
