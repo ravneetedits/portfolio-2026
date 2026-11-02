@@ -14,10 +14,12 @@ import MaintenancePage from './components/MaintenancePage';
 import { projects } from './data/projects';
 
 const MAINTENANCE_MODE = false;
+// Logo intro animation (components/LoadingAnimation.jsx). Set to true to bring it back.
+const SHOW_INTRO = false;
 
 function PortfolioSite() {
   useLenis();
-  const [introDone, setIntroDone] = useState(false);
+  const [introDone, setIntroDone] = useState(!SHOW_INTRO);
   const [activeId, setActiveId] = useState(null);
   const [originRect, setOriginRect] = useState(null);
 
@@ -39,7 +41,7 @@ function PortfolioSite() {
 
   return (
     <div className="noise relative min-h-screen bg-ink text-white">
-      <LoadingAnimation onDone={() => setIntroDone(true)} />
+      {SHOW_INTRO && <LoadingAnimation onDone={() => setIntroDone(true)} />}
       <Cursor />
       <ScrollProgress />
       <Navbar />
