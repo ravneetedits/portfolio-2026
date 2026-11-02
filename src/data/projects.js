@@ -26,8 +26,8 @@ export const projects = [
     gradient: 'linear-gradient(135deg,#7c3aed 0%,#2563eb 50%,#7c3aed 100%)',
     accent: '#7c3aed',
     spec: true,
-    final: { id: '', shorts: false },
-    bts: [],
+    final: { id: 'QoTh9PJy7fY', shorts: false },
+    bts: [{ id: 'kcbJmTQ-cgs', shorts: false }],
     stills: [],
   },
   {
