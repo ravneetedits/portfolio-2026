@@ -81,7 +81,7 @@ export const projects = [
   },
   {
     id: 'windows-11-promo-bts',
-    title: 'Windows 11 Promo BTS!',
+    title: 'Windows 11 Promo',
     category: 'TBD',
     year: '2026',
     role: 'Motion, Design',
@@ -90,8 +90,8 @@ export const projects = [
     gradient: 'linear-gradient(135deg,#0078D4 0%,#00BCF2 50%,#0078D4 100%)',
     accent: '#0078D4',
     spec: true,
-    final: { id: 'amlCti-yGYg', shorts: true },
-    bts: [],
+    final: { id: 'PM8MQqltOEI', shorts: true },
+    bts: [{ id: 'amlCti-yGYg', shorts: true }],
     stills: [],
   },
   {
