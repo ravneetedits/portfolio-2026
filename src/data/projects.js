@@ -149,7 +149,7 @@ export const projects = [
     gradient: 'linear-gradient(135deg,#14b8a6 0%,#3b82f6 50%,#14b8a6 100%)',
     accent: '#14b8a6',
     spec: true,
-    final: { id: '', shorts: true },
+    final: { id: 'L9sxrdqJcBE', shorts: true },
     bts: [],
     stills: [],
   },
